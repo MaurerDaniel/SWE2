@@ -1,0 +1,115 @@
+﻿<Page
+    x:Class="App1.Views.ImageGalleryPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Style="{StaticResource PageStyle}"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:models="using:App1.Core.Models"
+    xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
+    NavigationCacheMode="Required"
+    mc:Ignorable="d">
+
+    <Grid x:Name="ContentArea">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.2*" />
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="0.75*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <Button Name="FileBtn" Content="File"/>
+                    <Button Name="EditBtn" Content="Edit Image"/>
+                    <Button Name="OptionsBtn" Content="Edit Image"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Name="SearchAutoSuggestBox"
+                         PlaceholderText="Search by keywords"
+                         Text="{x:Bind ViewModel.InputText, Mode=TwoWay, UpdateSourceTrigger=Default}"
+                         AcceptsReturn="False"
+                             MinWidth="400"/>
+                    <Button Content="Search"
+                            Background="White"
+                            BorderThickness="1"
+                            BorderBrush="Gray"
+                            Command="{ x:Bind ViewModel.SearchImgCommand}" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+        <Image Grid.Column="0"
+               Grid.Row="1"
+               Source="{x:Bind ViewModel.SelectedImg.Path,Mode=OneWay}" />
+
+        <Pivot Grid.Row="1"
+               Grid.Column="1" x:Name="rootPivot" Title="Picture Data">
+            <PivotItem Header="IPTC">
+                <!--Pivot content goes here-->
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="IPTC Bundesland"/>
+                        <TextBlock Text="IPTC ISO Landescode"/>
+                        <TextBlock Text="IPTC Land"/>
+                        <TextBlock Text="IPTC Ort"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.Bundesland,Mode=TwoWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.ISO_Landescode,Mode=TwoWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.Land,Mode=TwoWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.Ort,Mode=TwoWay}"/>
+                    </StackPanel>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem Header="EXIF">
+                <!--Pivot content goes here-->
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="EXIF Auflösungseinheit"/>
+                        <TextBlock Text="EXIF Bildtiefe"/>
+                        <TextBlock Text="EXIF Breite"/>
+                        <TextBlock Text="EXIF Höhe"/>
+                        <TextBlock Text="EXIF Horizontale Auflösung"/>
+                        <TextBlock Text="EXIF Vertikale Auflösung"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Aufloesungseinheit,Mode=OneWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.BildTiefe,Mode=TwoWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Breite,Mode=TwoWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Hoehe,Mode=OneWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.HorizontAufloesung,Mode=OneWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.VertAufloesung,Mode=OneWay}"/>
+                    </StackPanel>
+                </StackPanel>
+            </PivotItem>
+        </Pivot>
+
+
+        <GridView Grid.Row="2"
+                  Grid.ColumnSpan="2"
+            ItemsSource="{x:Bind ViewModel.ImageSource, Mode=OneWay}"
+            IsItemClickEnabled="True"
+            SelectedItem="{x:Bind ViewModel.SelectedImg, Mode=TwoWay}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+            <!--<i:Interaction.Behaviors>
+                <ic:EventTriggerBehavior EventName="ItemClick">
+                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.ItemSelectedCommand}" />
+                </ic:EventTriggerBehavior>
+            </i:Interaction.Behaviors>-->
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="models:PictureModel">
+                    <Image
+                        x:Name="thumbnailImage"
+                        Style="{StaticResource ThumbnailImageStyle}"
+                        Source="{x:Bind Path}"/>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+    </Grid>
+</Page>
