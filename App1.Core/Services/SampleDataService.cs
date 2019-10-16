@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
+using System.Data.SQLite;
 using System.Threading.Tasks;
 
 using App1.Core.Models;
+using Dapper;
 using Microsoft.Data.Sqlite;
 
 namespace App1.Core.Services
@@ -19,17 +22,110 @@ namespace App1.Core.Services
             {
                 db.Open();
 
-                String tableCommand = "CREATE TABLE IF NOT " +
-                    "EXISTS MyTable (Primary_Key INTEGER PRIMARY KEY, " +
-                    "Text_Entry NVARCHAR(2048) NULL)";
+                //create pic table
+                string tableCommand =
+                    "CREATE TABLE IF NOT " +
+                    "EXISTS Fotographers (Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "Firstname NVARCHAR(100), " +
+                    "Lastname NVARCHAR(50) NOT NULL, " +
+                    "Birtdate NVARCHAR(10) NOT NULL, " +
+                    "Notice TEXT )";
 
                 SqliteCommand createTable = new SqliteCommand(tableCommand, db);
 
                 createTable.ExecuteReader();
+
+
+                string tableCommand2 =
+                    "CREATE TABLE IF NOT " +
+                    "EXISTS Pictures (Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                    "Name NVARCHAR(100) NOT NULL, " +
+                                    "Path TEXT NOT NULL, " +
+                                    "FotographerId INTEGER NOT NULL, " +
+                                    "EXIFwidth INTEGER," +
+                                    "EXIFheight INTEGER," +
+                                    "IPTCcountry NVARCHAR(100)," +
+                                    "IPTCcity NVARCHAR(100), " +
+                "FOREIGN KEY(FotographerId) REFERENCES Fotographers(Id) );";
+
+                SqliteCommand createTable2 = new SqliteCommand(tableCommand2, db);
+
+                createTable2.ExecuteReader();
+
+                insertDataAsync();
+
+                /*
+                 * We place the ExecuteReader() call inside a try-catch block. 
+                 * This is because SQLite will always throw a SqliteException whenever 
+                 * it can’t execute the SQL command. Not getting the error confirms 
+                 * that the command went through correctly.
+                */
+
+                ////Create fotographer table
+                //tableCommand = "CREATE TABLE IF NOT " +
+                //    "EXISTS Fotographers (Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                //    "Firstname NVARCHAR(100), " +
+                //    "Lastname NVARCHAR(50) NOT NULL, " +
+                //    "Birtdate NVARCHAR(10) NOT NULL, " +
+                //    "Notice TEXT )";
+
+                //createTable = new SqliteCommand(tableCommand, db);
+
+                //createTable.ExecuteReader();
             }
         }
 
-        public static void AddData(string inputText)
+        public static void insertDataAsync()
+        {
+            var foGr = AllFotographers();
+            var Img = AllPictures();
+
+            using (var db = new SqliteConnection("Filename=sqlite.db"))
+            {
+
+                db.Open();
+                //AddFotographer()
+                foreach (var fogr in foGr)
+                {
+                    SqliteCommand insertCommand = new SqliteCommand();
+                    insertCommand.Connection = db;
+
+                    insertCommand.CommandText = "INSERT INTO Fotographers (Firstname, Lastname, Birtdate, Notice) VALUES(@Firstname, @Lastname, @Birtdate, @Notice);";
+                    insertCommand.Parameters.AddWithValue("@Firstname", fogr.Name);
+                    insertCommand.Parameters.AddWithValue("@Lastname", fogr.Surname);
+                    insertCommand.Parameters.AddWithValue("@Birtdate", fogr.Birthday);
+                    insertCommand.Parameters.AddWithValue("@Notice", fogr.Notes);
+
+
+                    insertCommand.ExecuteReader();
+                }
+
+                foreach (var img in Img)
+                {
+
+                    SqliteCommand insertCommand = new SqliteCommand();
+                    insertCommand.Connection = db;
+
+                    var parameters = new DynamicParameters();
+
+                    insertCommand.CommandText = "INSERT INTO Pictures (Name, Path, FotographerId, EXIFwidth, EXIFheight, IPTCcountry, IPTCcity) VALUES(@Name, @Path, @FotographerId, @EXIFwidth, @EXIFheight, @IPTCcountry, @IPTCcity); SELECT LAST_INSERT_ROWID();";
+
+                    insertCommand.Parameters.AddWithValue("@Name", img.Name);
+                    insertCommand.Parameters.AddWithValue("@Path", img.Path);
+                    insertCommand.Parameters.AddWithValue("@FotographerId", img.Owner.ID);
+                    insertCommand.Parameters.AddWithValue("@EXIFwidth", img.EXIF.Breite);
+                    insertCommand.Parameters.AddWithValue("@EXIFheight", img.EXIF.Hoehe);
+                    insertCommand.Parameters.AddWithValue("@IPTCcountry", img.IPTC.ISO_Landescode);
+                    insertCommand.Parameters.AddWithValue("@IPTCcity", img.IPTC.Ort);
+
+                    insertCommand.ExecuteReader();
+                }
+                db.Close();
+            }
+
+        }
+
+        public static void AddFotographer(string inputText)
         {
             using (SqliteConnection db = new SqliteConnection("Filename=sqliteSample.db"))
             {
@@ -49,25 +145,123 @@ namespace App1.Core.Services
 
         }
 
-        public static List<String> GetData()
+        public static void AddImage(string inputText)
         {
-            List<String> entries = new List<string>();
-
             using (SqliteConnection db = new SqliteConnection("Filename=sqliteSample.db"))
             {
                 db.Open();
 
-                SqliteCommand selectCommand = new SqliteCommand("SELECT Text_Entry from MyTable", db);
+                SqliteCommand insertCommand = new SqliteCommand();
+                insertCommand.Connection = db;
 
-                SqliteDataReader query = selectCommand.ExecuteReader();
+                // Use parameterized query to prevent SQL injection attacks
+                insertCommand.CommandText = "INSERT INTO MyTable VALUES (NULL, @Entry);";
+                insertCommand.Parameters.AddWithValue("@Entry", inputText);
 
-                while (query.Read())
-                {
-                    entries.Add(query.GetString(0));
-                }
+                insertCommand.ExecuteReader();
+
                 db.Close();
             }
+
+        }
+
+        public static ObservableCollection<PictureModel> GetPictures(string tablename)
+        {
+            ObservableCollection<PictureModel> entries = new ObservableCollection<PictureModel>();
+
+            using (SQLiteConnection db = new SQLiteConnection(@"Data Source=C:\Users\maure\AppData\Local\Packages\18A29D49-13FB-438A-B15D-FDF4E46EE5F5_dmmstcnp7dhq6\LocalState\sqlite.db;Version=3", true))
+            {
+                db.Open();
+
+                SQLiteDataAdapter ad;
+                DataTable dt = new DataTable();
+
+                SQLiteCommand cmd;
+                cmd = db.CreateCommand();
+                cmd.CommandText = "SELECT * from " + tablename;  //set the passed query
+                ad = new SQLiteDataAdapter(cmd);
+                ad.Fill(dt); //fill the datasource
+
+                db.Close();
+                foreach (DataRow row in dt.Rows)
+                {
+                    var a = row.ItemArray;
+
+                    PictureModel pic = new PictureModel();
+                    pic.Id = a[0].ToString();
+                    pic.Name = a[1].ToString();
+                    pic.Path = a[2].ToString();
+                    pic.Owner = new FotographerModel { ID = a[3].ToString() };
+                    pic.EXIF = new EXIFModel { Breite = a[4].ToString(), Hoehe = a[5].ToString() };
+                    pic.IPTC = new IPTCModel { Land = a[6].ToString(), Ort = a[7].ToString() };
+
+                    entries.Add(pic);
+                }
+            }
+
             return entries;
+        }
+
+        public static ObservableCollection<FotographerModel> GetFotographers(string tablename)
+        {
+            ObservableCollection<FotographerModel> entries = new ObservableCollection<FotographerModel>();
+
+            using (SQLiteConnection db = new SQLiteConnection(@"Data Source=C:\Users\maure\AppData\Local\Packages\18A29D49-13FB-438A-B15D-FDF4E46EE5F5_dmmstcnp7dhq6\LocalState\sqlite.db;Version=3", true))
+            {
+                db.Open();
+
+                SQLiteDataAdapter ad;
+                DataTable dt = new DataTable();
+
+                SQLiteCommand cmd;
+                cmd = db.CreateCommand();
+                cmd.CommandText = "SELECT * from " + tablename;  //set the passed query
+                ad = new SQLiteDataAdapter(cmd);
+                ad.Fill(dt); //fill the datasource
+
+                db.Close();
+                foreach (DataRow row in dt.Rows)
+                {
+                    var a = row.ItemArray;
+
+                    FotographerModel fo = new FotographerModel();
+                    fo.ID = a[0].ToString();
+                    fo.Name = a[1].ToString();
+                    fo.Surname = a[2].ToString();
+                    fo.Birthday = DateTime.Parse(a[3].ToString());
+                    fo.Notes = a[4].ToString();
+
+                    entries.Add(fo);
+                }
+            }
+
+            return entries;
+        }
+
+        public static void ChangeIPTC(int id, PictureModel newPic)
+        {
+            using (SqliteConnection db = new SqliteConnection(@"Data Source=C:\Users\maure\AppData\Local\Packages\18A29D49-13FB-438A-B15D-FDF4E46EE5F5_dmmstcnp7dhq6\LocalState\sqlite.db"))
+            {
+                db.Open();
+
+                SqliteCommand insertCommand = new SqliteCommand();
+                insertCommand.Connection = db;
+
+                // Use parameterized query to prevent SQL injection attacks
+                insertCommand.CommandText = "UPDATE Pictures SET IPTCcountry = " + newPic.IPTC.Land + ", IPTCcity = " + newPic.IPTC.Ort + " WHERE StudentId = " + id + "; ";  //set the passed query
+
+                insertCommand.ExecuteReader();
+
+                db.Close();
+
+
+                //SQLiteDataAdapter ad;
+                //DataTable dt = new DataTable();
+
+                //SQLiteCommand cmd;
+                //cmd = db.CreateCommand();
+                //cmd.CommandText = "UPDATE Pictures SET IPTCcountry = "+ newPic.IPTC.Land +", IPTCcity = "+ newPic.IPTC.Ort +" WHERE StudentId = "+ id +"; " ;  //set the passed query
+            }
         }
 
         #endregion
@@ -325,6 +519,10 @@ namespace App1.Core.Services
         private static string _localResourcesPath;
 
         private static ObservableCollection<PictureModel> _gallerySampleData;
+        private static ObservableCollection<FotographerModel> _galleryFotographerData;
+        private static ObservableCollection<PictureModel> _galleryImageData;
+
+
 
         public static void Initialize(string localResourcesPath)
         {
@@ -332,12 +530,13 @@ namespace App1.Core.Services
         }
 
         // TODO WTS: Remove this once your image gallery page is displaying real data.
-        public static ObservableCollection<PictureModel> GetGalleryTempData()
+        public static ObservableCollection<FotographerModel> GetFotographerData()
         {
-            if (_gallerySampleData == null)
+            if (_galleryFotographerData == null)
             {
-                _gallerySampleData = new ObservableCollection<PictureModel>();
-                _gallerySampleData = AllPictures();
+                _galleryFotographerData = new ObservableCollection<FotographerModel>();
+                _galleryFotographerData = GetFotographers("Fotographers");
+                //AllPictures();
                 //for (int i = 1; i <= 10; i++)
                 //{
                 //    _gallerySampleData.Add(new SampleImage()
@@ -349,7 +548,18 @@ namespace App1.Core.Services
                 //}
             }
 
-            return _gallerySampleData;
+            return _galleryFotographerData;
+        }
+
+        public static ObservableCollection<PictureModel> GetImageData()
+        {
+            if (_galleryImageData == null)
+            {
+                _galleryImageData = new ObservableCollection<PictureModel>();
+                _galleryImageData = GetPictures("Pictures");
+            }
+
+            return _galleryImageData;
         }
 
         // TODO WTS: Remove this once your MasterDetail pages are displaying real data.

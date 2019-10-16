@@ -26,7 +26,7 @@
         <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <Button Name="FileBtn" Content="File"/>
+                    <Button Name="FotographersBtn" Content="Show Fotographers" Command="{ x:Bind ViewModel.FotographersCmd}"/>
                     <Button Name="EditBtn" Content="Edit Image"/>
                     <Button Name="OptionsBtn" Content="Edit Image"/>
                 </StackPanel>
@@ -54,16 +54,22 @@
                 <!--Pivot content goes here-->
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Text="IPTC Bundesland"/>
-                        <TextBlock Text="IPTC ISO Landescode"/>
                         <TextBlock Text="IPTC Land"/>
                         <TextBlock Text="IPTC Ort"/>
+                        <TextBox Text="Change IPTC Land" IsReadOnly="True"/>
+                        <TextBox Text="Change IPTC Ort" IsReadOnly="True"/>
                     </StackPanel>
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.Bundesland,Mode=TwoWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.ISO_Landescode,Mode=TwoWay}"/>
                         <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.Land,Mode=TwoWay}"/>
                         <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.Ort,Mode=TwoWay}"/>
+                        <TextBox Text="{x:Bind ViewModel.SelectedImg.IPTC.Land,Mode=TwoWay}"/>
+                        <TextBox Text="{x:Bind ViewModel.SelectedImg.IPTC.Ort,Mode=TwoWay}"/>
+                        <Button Content="Save"
+                            Background="Blue"
+                            BorderThickness="1"
+                            BorderBrush="White"
+                                Foreground="White"
+                            Command="{ x:Bind ViewModel.EditImgCommand}" /> 
                     </StackPanel>
                 </StackPanel>
             </PivotItem>

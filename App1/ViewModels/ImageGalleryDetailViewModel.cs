@@ -36,7 +36,7 @@ namespace App1.ViewModels
         public ImageGalleryDetailViewModel()
         {
             // TODO WTS: Replace this with your actual data
-            Source = SampleDataService.GetGalleryTempData();
+            //yySource = SampleDataService.GetGalleryTempData();
         }
 
         public void Initialize(string selectedImageID, NavigationMode navigationMode)

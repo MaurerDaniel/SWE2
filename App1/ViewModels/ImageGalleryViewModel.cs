@@ -29,6 +29,8 @@ namespace App1.ViewModels
         //ObservableCollection<SampleImage> _source;
         ObservableCollection<PictureModel> _ImageSource = new ObservableCollection<PictureModel>();
 
+
+
         private PictureModel _selectedImg;
 
         private RelayCommand _editImgCommand;
@@ -44,6 +46,35 @@ namespace App1.ViewModels
         {
             get;
             set;
+        }
+
+        public ICommand FotographersCmd { get; private set; }
+
+
+        private string _newOrt;
+        public string NewOrt
+        {
+            get
+            {
+                return _newOrt;
+            }
+            set
+            {
+                Set(ref _newOrt, value);
+            }
+        }
+
+        private string _newLand;
+        public string NewLand
+        {
+            get
+            {
+                return _newLand;
+            }
+            set
+            {
+                Set(ref _newLand, value);
+            }
         }
 
         private string _inputText;
@@ -118,8 +149,10 @@ namespace App1.ViewModels
             //ImageSource = SampleDataService.GetGalleryTempData();
             //Source = SampleDataService.GetGallerySampleData();
             LoadData();
-            //EditImgCommand = new RelayCommand(EditImg);
+            EditImgCommand = new RelayCommand(EditImg);
             SearchImgCommand = new RelayCommand(SearchImage);
+            FotographersCmd = new RelayCommand(() => ShowFotographers());
+
 
         }
 
@@ -128,10 +161,17 @@ namespace App1.ViewModels
             ImageSource.Clear();
             WholeSource.Clear();
 
-            var data = SampleDataService.GetGalleryTempData();
+            var fotographers = SampleDataService.GetFotographerData();
 
-            foreach (var item in data)
+            var pics = SampleDataService.GetImageData();
+            foreach (var item in pics)
             {
+                //Console.WriteLine(item.ToString());
+
+                var a = fotographers.Where(n => n.ID == item.Owner.ID).FirstOrDefault();
+
+                item.Owner = (FotographerModel)a;
+
                 ImageSource.Add(item);
                 WholeSource.Add(item);
             }
@@ -153,11 +193,7 @@ namespace App1.ViewModels
                     t.Owner.Surname.Contains(InputText) ||
                     t.EXIF.Breite.Contains((InputText)) ||
                     t.EXIF.Hoehe.Contains((InputText)) ||
-                    t.EXIF.Aufloesungseinheit.Contains((InputText)) ||
-                    t.EXIF.BildTiefe.Contains((InputText)) ||
-                    t.IPTC.Bundesland.Contains(InputText) ||
                     t.IPTC.Land.Contains(InputText) ||
-                    t.IPTC.ISO_Landescode.Contains(InputText) ||
                     t.IPTC.Ort.Contains(InputText))
                     .ToList();
                 foreach (var item in res)
@@ -171,13 +207,35 @@ namespace App1.ViewModels
             }
         }
 
-        //public void EditImg()
-        //{
-        //    int selectedIndex = ImageSource.IndexOf(SelectedImg);
+        public void EditImg()
+        {
+            int selectedIndex = ImageSource.IndexOf(SelectedImg);
 
-        //    ImageSource[selectedIndex] = NewImageModel;
-        //    RaisePropertyChanged("SelectedImg");
-        //}
+            ImageSource[selectedIndex] = NewImageModel;
+
+            PictureModel newPic = ImageSource[selectedIndex];
+
+            if (!string.IsNullOrWhiteSpace(NewLand) && NewLand != ImageSource[selectedIndex].IPTC.Land)
+            {
+                newPic.IPTC.Land = NewLand;
+                SampleDataService.ChangeIPTC(selectedIndex, newPic);
+            }
+            if (!string.IsNullOrWhiteSpace(NewOrt) && NewOrt != ImageSource[selectedIndex].IPTC.Ort)
+            {
+                newPic.IPTC.Ort = NewOrt;
+                SampleDataService.ChangeIPTC(selectedIndex, newPic);
+            }
+
+
+            RaisePropertyChanged("SelectedImg");
+        }
+
+        public void ShowFotographers()
+        {
+            //passende Viewmodel erstellen
+            FotographerViewViewModel model = new FotographerViewViewModel();
+            View.DisplayAddNewView(model);
+        }
 
         //private void OnsItemSelected(ItemClickEventArgs args)
         //{MasterDetailsViewState

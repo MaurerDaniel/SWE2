@@ -110,7 +110,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.8</Version>
+      <Version>6.2.9</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Animations">
       <Version>5.1.1</Version>
@@ -286,6 +286,10 @@
     <ProjectReference Include="..\App1.Core\App1.Core.csproj">
       <Project>{41F4F4CA-BF04-4D2C-AEDE-01BB78D033E9}</Project>
       <Name>App1.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccessLibrary\DataAccessLibrary.csproj">
+      <Project>{88012ed1-9b8e-4190-b852-2a5acc3715a6}</Project>
+      <Name>DataAccessLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
