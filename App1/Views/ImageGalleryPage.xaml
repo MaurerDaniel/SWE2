@@ -12,110 +12,159 @@
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="0.2*" />
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="0.75*"/>
-        </Grid.RowDefinitions>
+    <Pivot>
+        <PivotItem Header="Show Images">
+            <Grid x:Name="ContentArea">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.2*" />
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="0.75*"/>
+                </Grid.RowDefinitions>
 
-        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical">
-            <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
-                    <Button Name="FotographersBtn" Content="Show Fotographers" Command="{ x:Bind ViewModel.FotographersCmd}"/>
-                    <Button Name="EditBtn" Content="Edit Image"/>
-                    <Button Name="OptionsBtn" Content="Edit Image"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Name="SearchAutoSuggestBox"
+                <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical">
+                    <StackPanel Orientation="Vertical">
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Name="SearchAutoSuggestBox"
                          PlaceholderText="Search by keywords"
                          Text="{x:Bind ViewModel.InputText, Mode=TwoWay, UpdateSourceTrigger=Default}"
                          AcceptsReturn="False"
                              MinWidth="400"/>
-                    <Button Content="Search"
+                            <Button Content="Search"
                             Background="White"
                             BorderThickness="1"
                             BorderBrush="Gray"
                             Command="{ x:Bind ViewModel.SearchImgCommand}" />
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-        </StackPanel>
-        <Image Grid.Column="0"
+                <Image Grid.Column="0"
                Grid.Row="1"
                Source="{x:Bind ViewModel.SelectedImg.Path,Mode=OneWay}" />
 
-        <Pivot Grid.Row="1"
+                <Pivot Grid.Row="1"
                Grid.Column="1" x:Name="rootPivot" Title="Picture Data">
-            <PivotItem Header="IPTC">
-                <!--Pivot content goes here-->
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="IPTC Land"/>
-                        <TextBlock Text="IPTC Ort"/>
-                        <TextBox Text="Change IPTC Land" IsReadOnly="True"/>
-                        <TextBox Text="Change IPTC Ort" IsReadOnly="True"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.Land,Mode=TwoWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.Ort,Mode=TwoWay}"/>
-                        <TextBox Text="{x:Bind ViewModel.SelectedImg.IPTC.Land,Mode=TwoWay}"/>
-                        <TextBox Text="{x:Bind ViewModel.SelectedImg.IPTC.Ort,Mode=TwoWay}"/>
-                        <Button Content="Save"
+                    <PivotItem Header="IPTC">
+                        <!--Pivot content goes here-->
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="IPTC Land"/>
+                                <TextBlock Text="IPTC Ort"/>
+                                <TextBox Text="Change IPTC Land" IsReadOnly="True"/>
+                                <TextBox Text="Change IPTC Ort" IsReadOnly="True"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.Land,Mode=TwoWay}"/>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedImg.IPTC.Ort,Mode=TwoWay}"/>
+                                <TextBox Text="{x:Bind ViewModel.NewLand,Mode=TwoWay}"/>
+                                <TextBox Text="{x:Bind ViewModel.NewOrt,Mode=TwoWay}"/>
+                                <Button Content="Save"
                             Background="Blue"
                             BorderThickness="1"
                             BorderBrush="White"
                                 Foreground="White"
-                            Command="{ x:Bind ViewModel.EditImgCommand}" /> 
-                    </StackPanel>
-                </StackPanel>
-            </PivotItem>
-            <PivotItem Header="EXIF">
-                <!--Pivot content goes here-->
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="EXIF Auflösungseinheit"/>
-                        <TextBlock Text="EXIF Bildtiefe"/>
-                        <TextBlock Text="EXIF Breite"/>
-                        <TextBlock Text="EXIF Höhe"/>
-                        <TextBlock Text="EXIF Horizontale Auflösung"/>
-                        <TextBlock Text="EXIF Vertikale Auflösung"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Aufloesungseinheit,Mode=OneWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.BildTiefe,Mode=TwoWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Breite,Mode=TwoWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Hoehe,Mode=OneWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.HorizontAufloesung,Mode=OneWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.VertAufloesung,Mode=OneWay}"/>
-                    </StackPanel>
-                </StackPanel>
-            </PivotItem>
-        </Pivot>
+                            Command="{ x:Bind ViewModel.EditImgCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </PivotItem>
+                    <PivotItem Header="EXIF">
+                        <!--Pivot content goes here-->
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Tag"/>
+                                <TextBlock Text="EXIF Bildtiefe"/>
+                                <TextBlock Text="EXIF Breite"/>
+                                <TextBlock Text="EXIF Höhe"/>
+                                <TextBlock Text="EXIF Horizontale Auflösung"/>
+                                <TextBlock Text="EXIF Vertikale Auflösung"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="{x:Bind ViewModel.SelectedImg.Tag,Mode=OneWay}"/>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Breite,Mode=TwoWay}"/>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Hoehe,Mode=OneWay}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </PivotItem>
+                </Pivot>
 
 
-        <GridView Grid.Row="2"
-                  Grid.ColumnSpan="2"
-            ItemsSource="{x:Bind ViewModel.ImageSource, Mode=OneWay}"
-            IsItemClickEnabled="True"
-            SelectedItem="{x:Bind ViewModel.SelectedImg, Mode=TwoWay}"
-                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
-            <!--<i:Interaction.Behaviors>
+                <GridView Grid.Row="2"
+                          Grid.ColumnSpan="2"
+                          ItemsSource="{x:Bind ViewModel.ImageSource, Mode=OneWay}"
+                          IsItemClickEnabled="True"
+                          SelectedItem="{x:Bind ViewModel.SelectedImg, Mode=TwoWay}">
+                    <!--<i:Interaction.Behaviors>
                 <ic:EventTriggerBehavior EventName="ItemClick">
                     <ic:InvokeCommandAction Command="{x:Bind ViewModel.ItemSelectedCommand}" />
                 </ic:EventTriggerBehavior>
             </i:Interaction.Behaviors>-->
-            <GridView.ItemTemplate>
-                <DataTemplate x:DataType="models:PictureModel">
-                    <Image
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="models:PictureModel">
+                            <Image
                         x:Name="thumbnailImage"
                         Style="{StaticResource ThumbnailImageStyle}"
                         Source="{x:Bind Path}"/>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-        </GridView>
-    </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </Grid>
+        </PivotItem>
+        <PivotItem Header="Show Fotographers">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Add new Fotographer" FontSize="10"/>
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <TextBox Width="150" Text="{x:Bind ViewModel.AllNewName, Mode=TwoWay}"/>
+                    <TextBox Width="100" Text="{x:Bind ViewModel.AllNewSurName, Mode=TwoWay}"/>
+                    <TextBox Width="150" Text="{x:Bind ViewModel.AllNewDate, Mode=TwoWay}"/>
+                    <TextBox Width="300" Text="{x:Bind ViewModel.AllNewNotice, Mode=TwoWay}"/>
+                    <Button Content="Add"
+                                    Background="Blue"
+                                    BorderThickness="1"
+                                    BorderBrush="White"
+                                    Foreground="White"
+                                    Command="{ x:Bind ViewModel.AddFotographerCommand}"/>
+                </StackPanel>
+                <TextBlock Grid.Row="2" Text="Edit selected Fotographer" FontSize="10"/>
+                <StackPanel Grid.Row="3" Orientation="Horizontal">
+                    <TextBox Width="150" Text="{x:Bind ViewModel.NewName, Mode=TwoWay}"/>
+                    <TextBox Width="100" Text="{x:Bind ViewModel.NewSurName, Mode=TwoWay}"/>
+                    <TextBox Width="150" Text="{x:Bind ViewModel.NewDate, Mode=TwoWay}"/>
+                    <TextBox Width="300" Text="{x:Bind ViewModel.NewNotice, Mode=TwoWay}"/>
+                    <Button Content="Edit"
+                                    Background="Blue"
+                                    BorderThickness="1"
+                                    BorderBrush="White"
+                                    Foreground="White"
+                                    Command="{ x:Bind ViewModel.EditFotographerCommand}"/>
+                </StackPanel>
+                <ListView Grid.Row="4" ItemsSource="{ x:Bind ViewModel.FotographersSource}"
+                          SelectedItem="{x:Bind ViewModel.SelectedFotographers, Mode=TwoWay}"
+                          ScrollViewer.VerticalScrollMode="Enabled"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:FotographerModel">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{x:Bind ID}"/>
+                                <TextBlock Width="150" Text="{x:Bind Name}"/>
+                                <TextBlock Width="100" Text="{x:Bind Surname}"/>
+                                <TextBlock Width="150" Text="{x:Bind Birthday}"/>
+                                <TextBlock Width="300" Text="{x:Bind Notes}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </PivotItem>
+    </Pivot>
 </Page>

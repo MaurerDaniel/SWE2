@@ -24,6 +24,8 @@ namespace App1.Core.Models
         public string Path { get; set; }
         public EXIFModel EXIF { get;  set; }
 
+        public string Tag { get; set; }
+
         //public PictureModel(string name, FotographerModel _owner , IPTCModel _iptc, EXIFModel _exif)
         //{
         //    Name = name;

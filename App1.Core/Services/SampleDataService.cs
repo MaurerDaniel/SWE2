@@ -18,7 +18,7 @@ namespace App1.Core.Services
         #region DATABASE
         public static void InitializeDatabase()
         {
-            using (SqliteConnection db = new SqliteConnection("Filename=sqlite.db"))
+            using (SqliteConnection db = new SqliteConnection(@"Filename=C:\Users\maure\AppData\Local\Packages\18A29D49-13FB-438A-B15D-FDF4E46EE5F5_dmmstcnp7dhq6\LocalState\sqlite.db"))
             {
                 db.Open();
 
@@ -46,6 +46,7 @@ namespace App1.Core.Services
                                     "EXIFheight INTEGER," +
                                     "IPTCcountry NVARCHAR(100)," +
                                     "IPTCcity NVARCHAR(100), " +
+                                    "Tag NVARCHAR(100), " +
                 "FOREIGN KEY(FotographerId) REFERENCES Fotographers(Id) );";
 
                 SqliteCommand createTable2 = new SqliteCommand(tableCommand2, db);
@@ -80,7 +81,7 @@ namespace App1.Core.Services
             var foGr = AllFotographers();
             var Img = AllPictures();
 
-            using (var db = new SqliteConnection("Filename=sqlite.db"))
+            using (var db = new SqliteConnection(@"Filename=C:\Users\maure\AppData\Local\Packages\18A29D49-13FB-438A-B15D-FDF4E46EE5F5_dmmstcnp7dhq6\LocalState\sqlite.db"))
             {
 
                 db.Open();
@@ -108,7 +109,7 @@ namespace App1.Core.Services
 
                     var parameters = new DynamicParameters();
 
-                    insertCommand.CommandText = "INSERT INTO Pictures (Name, Path, FotographerId, EXIFwidth, EXIFheight, IPTCcountry, IPTCcity) VALUES(@Name, @Path, @FotographerId, @EXIFwidth, @EXIFheight, @IPTCcountry, @IPTCcity); SELECT LAST_INSERT_ROWID();";
+                    insertCommand.CommandText = "INSERT INTO Pictures (Name, Path, FotographerId, EXIFwidth, EXIFheight, IPTCcountry, IPTCcity, Tag) VALUES(@Name, @Path, @FotographerId, @EXIFwidth, @EXIFheight, @IPTCcountry, @IPTCcity ,@Tag); SELECT LAST_INSERT_ROWID();";
 
                     insertCommand.Parameters.AddWithValue("@Name", img.Name);
                     insertCommand.Parameters.AddWithValue("@Path", img.Path);
@@ -117,6 +118,8 @@ namespace App1.Core.Services
                     insertCommand.Parameters.AddWithValue("@EXIFheight", img.EXIF.Hoehe);
                     insertCommand.Parameters.AddWithValue("@IPTCcountry", img.IPTC.ISO_Landescode);
                     insertCommand.Parameters.AddWithValue("@IPTCcity", img.IPTC.Ort);
+                    insertCommand.Parameters.AddWithValue("@Tag", img.Tag);
+
 
                     insertCommand.ExecuteReader();
                 }
@@ -125,18 +128,21 @@ namespace App1.Core.Services
 
         }
 
-        public static void AddFotographer(string inputText)
+        public static void AddFog(FotographerModel fog)
         {
-            using (SqliteConnection db = new SqliteConnection("Filename=sqliteSample.db"))
+            using (SQLiteConnection db = new SQLiteConnection(@"Data Source=C:\Users\maure\AppData\Local\Packages\18A29D49-13FB-438A-B15D-FDF4E46EE5F5_dmmstcnp7dhq6\LocalState\sqlite.db;Version=3", true))
             {
                 db.Open();
 
-                SqliteCommand insertCommand = new SqliteCommand();
+                SQLiteCommand insertCommand = new SQLiteCommand();
                 insertCommand.Connection = db;
 
-                // Use parameterized query to prevent SQL injection attacks
-                insertCommand.CommandText = "INSERT INTO MyTable VALUES (NULL, @Entry);";
-                insertCommand.Parameters.AddWithValue("@Entry", inputText);
+                insertCommand.CommandText = "INSERT INTO Fotographers (Firstname, Lastname, Birtdate, Notice) VALUES(@Firstname, @Lastname, @Birtdate, @Notice); ; SELECT LAST_INSERT_ROWID();";
+                insertCommand.Parameters.AddWithValue("@Firstname", fog.Name);
+                insertCommand.Parameters.AddWithValue("@Lastname", fog.Surname);
+                insertCommand.Parameters.AddWithValue("@Birtdate", fog.Birthday);
+                insertCommand.Parameters.AddWithValue("@Notice", fog.Notes);
+
 
                 insertCommand.ExecuteReader();
 
@@ -147,7 +153,7 @@ namespace App1.Core.Services
 
         public static void AddImage(string inputText)
         {
-            using (SqliteConnection db = new SqliteConnection("Filename=sqliteSample.db"))
+            using (SqliteConnection db = new SqliteConnection(@"Filename=C:\Users\maure\AppData\Local\Packages\18A29D49-13FB-438A-B15D-FDF4E46EE5F5_dmmstcnp7dhq6\LocalStatesqlite.db"))
             {
                 db.Open();
 
@@ -248,12 +254,44 @@ namespace App1.Core.Services
                 insertCommand.Connection = db;
 
                 // Use parameterized query to prevent SQL injection attacks
-                insertCommand.CommandText = "UPDATE Pictures SET IPTCcountry = " + newPic.IPTC.Land + ", IPTCcity = " + newPic.IPTC.Ort + " WHERE StudentId = " + id + "; ";  //set the passed query
+                insertCommand.CommandText = "UPDATE Pictures SET IPTCcountry = @Land, IPTCcity = @Ort WHERE Id = @id;";  //set the passed query
+                insertCommand.Parameters.AddWithValue("@Land", newPic.IPTC.Land);
+                insertCommand.Parameters.AddWithValue("@Ort", newPic.IPTC.Ort);
+                insertCommand.Parameters.AddWithValue("@id", id);
 
                 insertCommand.ExecuteReader();
 
                 db.Close();
 
+                //SQLiteDataAdapter ad;
+                //DataTable dt = new DataTable();
+
+                //SQLiteCommand cmd;
+                //cmd = db.CreateCommand();
+                //cmd.CommandText = "UPDATE Pictures SET IPTCcountry = "+ newPic.IPTC.Land +", IPTCcity = "+ newPic.IPTC.Ort +" WHERE StudentId = "+ id +"; " ;  //set the passed query
+            }
+        }
+
+        public static void ChangeFog(int id, FotographerModel newFog)
+        {
+            using (SqliteConnection db = new SqliteConnection(@"Data Source=C:\Users\maure\AppData\Local\Packages\18A29D49-13FB-438A-B15D-FDF4E46EE5F5_dmmstcnp7dhq6\LocalState\sqlite.db"))
+            {
+                db.Open();
+
+                SqliteCommand insertCommand = new SqliteCommand();
+                insertCommand.Connection = db;
+
+                // Use parameterized query to prevent SQL injection attacks
+                insertCommand.CommandText = "UPDATE Fotographers SET Firstname = @Firstname, Lastname = @Lastname, Birtdate = @Birthday, Notice = @Notice WHERE Id = @id;";  //set the passed query
+                insertCommand.Parameters.AddWithValue("@Firstname", newFog.Name);
+                insertCommand.Parameters.AddWithValue("@Lastname", newFog.Surname);
+                insertCommand.Parameters.AddWithValue("@Birthday", newFog.Birthday);
+                insertCommand.Parameters.AddWithValue("@Notice", newFog.Notes);
+                insertCommand.Parameters.AddWithValue("@id", id);
+
+                insertCommand.ExecuteReader();
+
+                db.Close();
 
                 //SQLiteDataAdapter ad;
                 //DataTable dt = new DataTable();
