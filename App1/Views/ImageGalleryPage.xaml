@@ -67,29 +67,26 @@
                             BorderThickness="1"
                             BorderBrush="White"
                                 Foreground="White"
-                            Command="{ x:Bind ViewModel.EditImgCommand}" />
-                            </StackPanel>
-                        </StackPanel>
-                    </PivotItem>
-                    <PivotItem Header="EXIF">
-                        <!--Pivot content goes here-->
-                        <StackPanel Orientation="Horizontal">
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock Text="Tag"/>
-                                <TextBlock Text="EXIF Bildtiefe"/>
-                                <TextBlock Text="EXIF Breite"/>
-                                <TextBlock Text="EXIF Höhe"/>
-                                <TextBlock Text="EXIF Horizontale Auflösung"/>
-                                <TextBlock Text="EXIF Vertikale Auflösung"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock Text="{x:Bind ViewModel.SelectedImg.Tag,Mode=OneWay}"/>
-                                <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Breite,Mode=TwoWay}"/>
-                                <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Hoehe,Mode=OneWay}"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </PivotItem>
-                </Pivot>
+                            Command="{ x:Bind ViewModel.EditImgCommand}" /> 
+                    </StackPanel>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem Header="EXIF">
+                <!--Pivot content goes here-->
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Tag"/>
+                        <TextBlock Text="EXIF Breite"/>
+                        <TextBlock Text="EXIF Höhe"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.Tag,Mode=OneWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Breite,Mode=TwoWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectedImg.EXIF.Hoehe,Mode=OneWay}"/>
+                    </StackPanel>
+                </StackPanel>
+            </PivotItem>
+        </Pivot>
 
 
                 <GridView Grid.Row="2"
