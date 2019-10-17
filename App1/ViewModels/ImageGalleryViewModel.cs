@@ -28,15 +28,25 @@ namespace App1.ViewModels
 
         //ObservableCollection<SampleImage> _source;
         ObservableCollection<PictureModel> _ImageSource = new ObservableCollection<PictureModel>();
+        ObservableCollection<FotographerModel> _FotographersSource = new ObservableCollection<FotographerModel>();
+
 
 
 
         private PictureModel _selectedImg;
 
+        private FotographerModel _selectedFotographers;
+
         private RelayCommand _editImgCommand;
 
 
         public RelayCommand EditImgCommand
+        {
+            get;
+            set;
+        }
+
+        public RelayCommand EditFotographerCommand
         {
             get;
             set;
@@ -50,6 +60,7 @@ namespace App1.ViewModels
 
         public ICommand FotographersCmd { get; private set; }
 
+        public ICommand AddFotographerCommand { get; private set; }
 
         private string _newOrt;
         public string NewOrt
@@ -74,6 +85,110 @@ namespace App1.ViewModels
             set
             {
                 Set(ref _newLand, value);
+            }
+        }
+
+        private string _newName;
+        public string NewName
+        {
+            get
+            {
+                return _newName;
+            }
+            set
+            {
+                Set(ref _newName, value);
+            }
+        }
+
+        private string _newSurName;
+        public string NewSurName
+        {
+            get
+            {
+                return _newSurName;
+            }
+            set
+            {
+                Set(ref _newSurName, value);
+            }
+        }
+
+        private string _newDate;
+        public string NewDate
+        {
+            get
+            {
+                return _newDate;
+            }
+            set
+            {
+                Set(ref _newDate, value);
+            }
+        }
+
+        private string _newNotice;
+        public string NewNotice
+        {
+            get
+            {
+                return _newNotice;
+            }
+            set
+            {
+                Set(ref _newNotice, value);
+            }
+        }
+
+        private string _allnewName;
+        public string AllNewName
+        {
+            get
+            {
+                return _allnewName;
+            }
+            set
+            {
+                Set(ref _allnewName, value);
+            }
+        }
+
+        private string _allnewSurName;
+        public string AllNewSurName
+        {
+            get
+            {
+                return _allnewSurName;
+            }
+            set
+            {
+                Set(ref _allnewSurName, value);
+            }
+        }
+
+        private string _allnewDate;
+        public string AllNewDate
+        {
+            get
+            {
+                return _allnewDate;
+            }
+            set
+            {
+                Set(ref _allnewDate, value);
+            }
+        }
+
+        private string _allnewNotice;
+        public string AllNewNotice
+        {
+            get
+            {
+                return _allnewNotice;
+            }
+            set
+            {
+                Set(ref _allnewNotice, value);
             }
         }
 
@@ -116,6 +231,17 @@ namespace App1.ViewModels
             }
         }
 
+        public FotographerModel SelectedFotographers
+        {
+            get
+            {
+                return _selectedFotographers;
+            }
+            set
+            {
+                Set(ref _selectedFotographers, value);
+            }
+        }
         public ObservableCollection<PictureModel> ImageSource
         {
             get
@@ -125,6 +251,17 @@ namespace App1.ViewModels
             set
             {
                 Set(ref _ImageSource, value);
+            }
+        }
+        public ObservableCollection<FotographerModel> FotographersSource
+        {
+            get
+            {
+                return _FotographersSource;
+            }
+            set
+            {
+                Set(ref _FotographersSource, value);
             }
         }
 
@@ -150,8 +287,10 @@ namespace App1.ViewModels
             //Source = SampleDataService.GetGallerySampleData();
             LoadData();
             EditImgCommand = new RelayCommand(EditImg);
+            EditFotographerCommand = new RelayCommand(EditFotographer);
+            AddFotographerCommand = new RelayCommand(AddFotographer);
             SearchImgCommand = new RelayCommand(SearchImage);
-            FotographersCmd = new RelayCommand(() => ShowFotographers());
+            //FotographersCmd = new RelayCommand(() => ShowFotographers());
 
 
         }
@@ -178,6 +317,11 @@ namespace App1.ViewModels
             if (ImageSource.Count != 0)
             {
                 SelectedImg = ImageSource[0];
+            }
+
+            foreach (var item in fotographers)
+            {
+                FotographersSource.Add(item);
             }
         }
 
@@ -226,16 +370,76 @@ namespace App1.ViewModels
                 SampleDataService.ChangeIPTC(selectedIndex, newPic);
             }
 
-
+            LoadData();
+            
             RaisePropertyChanged("SelectedImg");
+
         }
 
-        public void ShowFotographers()
+        public void EditFotographer()
         {
-            //passende Viewmodel erstellen
-            FotographerViewViewModel model = new FotographerViewViewModel();
-            View.DisplayAddNewView(model);
+            int selectedIndex = FotographersSource.IndexOf(SelectedFotographers);
+
+            // FotographersSource[selectedIndex] = NewImageModel;
+
+            FotographerModel newFog = FotographersSource[selectedIndex];
+
+            DateTime date = new DateTime();
+
+            if (NewDate != null)
+            {
+                date = DateTime.Parse(NewDate);
+            }
+
+
+            if (!string.IsNullOrWhiteSpace(NewSurName) && NewSurName != FotographersSource[selectedIndex].Surname && !string.IsNullOrWhiteSpace(NewName)
+                && date != FotographersSource[selectedIndex].Birthday && date < DateTime.Today)
+            {
+                newFog.Name = NewName;
+                newFog.Surname = NewSurName;
+                newFog.Birthday = date;
+                newFog.Notes = NewNotice;
+                SampleDataService.ChangeFog(selectedIndex, newFog);
+            }
+
+            LoadData();
+            RaisePropertyChanged("FotographersSource");
+
         }
+
+        public void AddFotographer()
+        {
+            // int selectedIndex = FotographersSource.IndexOf(SelectedFotographers);
+
+            // FotographersSource[selectedIndex] = NewImageModel;
+
+            FotographerModel newFog = new FotographerModel();
+
+            DateTime date = DateTime.Parse(AllNewDate);
+
+
+            if (!string.IsNullOrWhiteSpace(AllNewSurName) && !string.IsNullOrWhiteSpace(AllNewName)
+                && date < DateTime.Today)
+            {
+                newFog.Name = AllNewName;
+                newFog.Surname = AllNewSurName;
+                newFog.Birthday = date;
+                newFog.Notes = AllNewNotice;
+                SampleDataService.AddFog(newFog);
+            }
+
+            LoadData();
+            RaisePropertyChanged("FotographersSource");
+
+        }
+
+
+        //public void ShowFotographers()
+        //{
+        //    //passende Viewmodel erstellen
+        //    FotographerViewViewModel model = new FotographerViewViewModel();
+        //    View.DisplayAddNewView(model);
+        //}
 
         //private void OnsItemSelected(ItemClickEventArgs args)
         //{MasterDetailsViewState
