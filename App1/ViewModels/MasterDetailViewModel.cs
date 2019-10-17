@@ -32,7 +32,7 @@ namespace App1.ViewModels
         {
             SampleItems.Clear();
 
-            var data = await SampleDataService.GetSampleModelDataAsync();
+            var data = await DataService.GetSampleModelDataAsync();
 
             foreach (var item in data)
             {

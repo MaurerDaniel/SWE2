@@ -300,9 +300,9 @@ namespace App1.ViewModels
             ImageSource.Clear();
             WholeSource.Clear();
 
-            var fotographers = SampleDataService.GetFotographerData();
+            var fotographers = DataService.GetFotographerData();
 
-            var pics = SampleDataService.GetImageData();
+            var pics = DataService.GetImageData();
             foreach (var item in pics)
             {
                 //Console.WriteLine(item.ToString());
@@ -362,12 +362,12 @@ namespace App1.ViewModels
             if (!string.IsNullOrWhiteSpace(NewLand) && NewLand != ImageSource[selectedIndex].IPTC.Land)
             {
                 newPic.IPTC.Land = NewLand;
-                SampleDataService.ChangeIPTC(selectedIndex, newPic);
+                DataService.ChangeIPTC(selectedIndex, newPic);
             }
             if (!string.IsNullOrWhiteSpace(NewOrt) && NewOrt != ImageSource[selectedIndex].IPTC.Ort)
             {
                 newPic.IPTC.Ort = NewOrt;
-                SampleDataService.ChangeIPTC(selectedIndex, newPic);
+                DataService.ChangeIPTC(selectedIndex, newPic);
             }
 
             LoadData();
@@ -399,7 +399,7 @@ namespace App1.ViewModels
                 newFog.Surname = NewSurName;
                 newFog.Birthday = date;
                 newFog.Notes = NewNotice;
-                SampleDataService.ChangeFog(selectedIndex, newFog);
+                DataService.ChangeFog(selectedIndex, newFog);
             }
 
             LoadData();
@@ -425,7 +425,7 @@ namespace App1.ViewModels
                 newFog.Surname = AllNewSurName;
                 newFog.Birthday = date;
                 newFog.Notes = AllNewNotice;
-                SampleDataService.AddFog(newFog);
+                DataService.AddFog(newFog);
             }
 
             LoadData();

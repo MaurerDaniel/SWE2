@@ -59,7 +59,7 @@ namespace App1.Services
 
         private async Task InitializeAsync()
         {
-            SampleDataService.Initialize("ms-appx:///Assets");
+            DataService.Initialize("ms-appx:///Assets");
             await Task.CompletedTask;
         }
 

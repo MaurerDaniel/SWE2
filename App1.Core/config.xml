@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <appSettings>
-    <add key="dbpath" value="" />
+    <add key="dbpath" value="C:\Users\maure\AppData\Local\Packages\18A29D49-13FB-438A-B15D-FDF4E46EE5F5_dmmstcnp7dhq6\LocalState\" />
     <add key="database" value="sqlite.db" />
   </appSettings>
 </configuration>

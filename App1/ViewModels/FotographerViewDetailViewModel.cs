@@ -24,7 +24,7 @@ namespace App1.ViewModels
 
         public void Initialize(long orderId)
         {
-            var data = SampleDataService.GetContentGridData();
+            var data = DataService.GetContentGridData();
             Item = data.First(i => i.OrderId == orderId);
         }
     }

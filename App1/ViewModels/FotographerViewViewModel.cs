@@ -26,7 +26,7 @@ namespace App1.ViewModels
             get
             {
                 // TODO WTS: Replace this with your actual data
-                return SampleDataService.GetContentGridData();
+                return DataService.GetContentGridData();
             }
         }
 
